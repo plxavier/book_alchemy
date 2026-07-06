@@ -22,8 +22,8 @@ except Exception as error:
 DB_PATH = os.path.join(DATA_DIR, 'library.db')
 DB_URI = f'sqlite:///{DB_PATH}'
 
-print(f"📁 Current working directory: {os.getcwd()}")
-print(f"📁 Database path: {DB_PATH}")
+print(f"Current working directory: {os.getcwd()}")
+print(f"Database path: {DB_PATH}")
 
 #logging
 try:
@@ -156,9 +156,9 @@ def seed_sample_data():
             ]
             db.session.add_all(books)
             db.session.commit()
-            print(f"✅ Added {len(authors)} authors and {len(books)} books!")
+            print(f"Added {len(authors)} authors and {len(books)} books!")
     except Exception as error:
-        print(f"⚠️ Error adding sample data: {error}")
+        print(f"Error adding sample data: {error}")
 
 
 def init_db():
@@ -167,14 +167,14 @@ def init_db():
         with app.app_context():
             db.create_all()
             logger.info("Database tables created successfully")
-            print("✅ Database tables created successfully")
+            print("Database tables created successfully")
 
             # Auto-seed sample data
             seed_sample_data()
 
     except Exception as error:
         logger.error(f"Error initializing database: {error}")
-        print(f"❌ Error initializing database: {error}")
+        print(f"Error initializing database: {error}")
 
 
 #app_routes
@@ -469,7 +469,7 @@ if __name__ == '__main__':
     try:
         print("\n" + "=" * 50)
         print("Book Alchemy - Digital Library")
-        print("Running on http://127.0.0.1:5001")
+        print("Running on http://127.0.0.1:5000")
         print("=" * 50 + "\n")
 
         init_db()
