@@ -55,21 +55,129 @@ except Exception as error:
     print(f"Error creating Flask application: {error}")
     sys.exit(1)
 
-#initializing_databse
+#initializing_databse with sample books
+def seed_sample_data():
+    """Add sample data if database is empty."""
+    try:
+        # Check if authors already exist
+        if Author.query.count() == 0:
+            print("📚 Adding sample data...")
+
+            # Create sample authors
+            authors = [
+                Author(name="J.R.R. Tolkien", birth_year=1892, nationality="British"),
+                Author(name="George Orwell", birth_year=1903, nationality="British"),
+                Author(name="Harper Lee", birth_year=1926, nationality="American"),
+                Author(name="Frank Herbert", birth_year=1920, nationality="American"),
+                Author(name="Jane Austen", birth_year=1775, nationality="British"),
+                Author(name="F. Scott Fitzgerald", birth_year=1896, nationality="American"),
+            ]
+            db.session.add_all(authors)
+            db.session.commit()
+
+            # Create sample books
+            books = [
+                Book(
+                    title="The Hobbit",
+                    author_id=1,
+                    genre="Fantasy",
+                    pages=310,
+                    publication_year=1937,
+                    read_status=True,
+                    rating=5,
+                    notes="My favorite fantasy book!"
+                ),
+                Book(
+                    title="The Lord of the Rings",
+                    author_id=1,
+                    genre="Fantasy",
+                    pages=1178,
+                    publication_year=1954,
+                    read_status=True,
+                    rating=5,
+                    notes="The greatest trilogy ever written."
+                ),
+                Book(
+                    title="1984",
+                    author_id=2,
+                    genre="Dystopian",
+                    pages=328,
+                    publication_year=1949,
+                    read_status=True,
+                    rating=5,
+                    notes="Scary but important read."
+                ),
+                Book(
+                    title="Animal Farm",
+                    author_id=2,
+                    genre="Satire",
+                    pages=112,
+                    publication_year=1945,
+                    read_status=False,
+                    rating=4
+                ),
+                Book(
+                    title="To Kill a Mockingbird",
+                    author_id=3,
+                    genre="Fiction",
+                    pages=281,
+                    publication_year=1960,
+                    read_status=True,
+                    rating=5,
+                    notes="A timeless classic."
+                ),
+                Book(
+                    title="Dune",
+                    author_id=4,
+                    genre="Science Fiction",
+                    pages=412,
+                    publication_year=1965,
+                    read_status=False,
+                    rating=4
+                ),
+                Book(
+                    title="Pride and Prejudice",
+                    author_id=5,
+                    genre="Romance",
+                    pages=432,
+                    publication_year=1813,
+                    read_status=True,
+                    rating=4
+                ),
+                Book(
+                    title="The Great Gatsby",
+                    author_id=6,
+                    genre="Fiction",
+                    pages=180,
+                    publication_year=1925,
+                    read_status=False,
+                    rating=4
+                ),
+            ]
+            db.session.add_all(books)
+            db.session.commit()
+            print(f"✅ Added {len(authors)} authors and {len(books)} books!")
+    except Exception as error:
+        print(f"⚠️ Error adding sample data: {error}")
+
+
 def init_db():
-    """Create database tables if they don't exist."""
+    """Create database tables and seed sample data if empty."""
     try:
         with app.app_context():
             db.create_all()
             logger.info("Database tables created successfully")
-            print("Database tables created successfully")
-            print(f"Database created at: {DB_PATH}")
+            print("✅ Database tables created successfully")
+
+            # Auto-seed sample data
+            seed_sample_data()
+
     except Exception as error:
         logger.error(f"Error initializing database: {error}")
-        print(f"Error initializing database: {error}")
+        print(f"❌ Error initializing database: {error}")
+
 
 #app_routes
-
 @app.route('/')
 def index():
     """Home page - display library statistics."""
