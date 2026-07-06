@@ -21,7 +21,9 @@ class Author(db.Model):
     def __repr__(self):
         return f'<Author {self.name}>'
 
+
     def to_dict(self):
+        """creating dict key value format for authors"""
         try:
             return {
                 'id': self.id,
@@ -59,7 +61,9 @@ class Book(db.Model):
     def __repr__(self):
         return f'<Book {self.title}>'
 
+
     def to_dict(self):
+        """creating dict key value format for books"""
         try:
             return {
                 'id': self.id,
