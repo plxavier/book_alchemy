@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Books - Book Alchemy{% endblock %}
+
+{% block content %}
+<h1>📖 All Books</h1>
+
+<div class="search-box">
+    <form method="GET" action="{{ url_for('books') }}" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
+        <input type="text" name="search" placeholder="🔍 Search by title or author..." value="{{ search_query or '' }}">
+        <select name="sort">
+            <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
+            <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Sort by Author</option>
+            <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Sort by Rating</option>
+            <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Sort by Year</option>
+        </select>
+        <button type="submit" class="btn btn-primary">🔍 Search</button>
+        <a href="{{ url_for('books') }}" class="btn btn-secondary">🔄 Reset</a>
+    </form>
+</div>
+
+{% if books %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Genre</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('book_detail', book_id=book.id) }}" style="text-decoration: none; font-weight: 600; color: #1a1a2e;">
+                                {{ book.title }}
+                            </a>
+                        </td>
+                        <td>{{ book.author.name }}</td>
+                        <td>{{ book.publication_year or '-' }}</td>
+                        <td>{{ book.genre or '-' }}</td>
+                        <td>
+                            {% if book.rating %}
+                                {{ '⭐' * book.rating }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if book.read_status %}
+                                <span style="background: #2ecc71; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">Read</span>
+                            {% else %}
+                                <span style="background: #f39c12; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">Unread</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-primary btn-sm">View</a>
+                                <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <form method="POST" action="{{ url_for('delete_book', book_id=book.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this book?')">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="card">
+        <p>No books found.</p>
+        <a href="{{ url_for('add_book') }}" class="btn btn-success">📖 Add your first book!</a>
+    </div>
+{% endif %}
+{% endblock %}

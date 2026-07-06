@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Book - Book Alchemy{% endblock %}
+
+{% block content %}
+<h1>✏️ Edit Book</h1>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" name="title" value="{{ book.title }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="author_id">Author *</label>
+            <select id="author_id" name="author_id" required>
+                {% for author in authors %}
+                    <option value="{{ author.id }}" {% if author.id == book.author_id %}selected{% endif %}>
+                        {{ author.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input type="text" id="isbn" name="isbn" value="{{ book.isbn or '' }}" placeholder="Enter ISBN">
+            </div>
+            <div class="form-group">
+                <label for="publication_year">Publication Year</label>
+                <input type="number" id="publication_year" name="publication_year" value="{{ book.publication_year or '' }}" placeholder="e.g., 2020">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <input type="text" id="genre" name="genre" value="{{ book.genre or '' }}" placeholder="e.g., Fiction">
+            </div>
+            <div class="form-group">
+                <label for="pages">Pages</label>
+                <input type="number" id="pages" name="pages" value="{{ book.pages or '' }}" placeholder="e.g., 250">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="rating">Rating (1-5)</label>
+                <select id="rating" name="rating">
+                    <option value="">Select rating</option>
+                    <option value="1" {% if book.rating == 1 %}selected{% endif %}>⭐ 1</option>
+                    <option value="2" {% if book.rating == 2 %}selected{% endif %}>⭐⭐ 2</option>
+                    <option value="3" {% if book.rating == 3 %}selected{% endif %}>⭐⭐⭐ 3</option>
+                    <option value="4" {% if book.rating == 4 %}selected{% endif %}>⭐⭐⭐⭐ 4</option>
+                    <option value="5" {% if book.rating == 5 %}selected{% endif %}>⭐⭐⭐⭐⭐ 5</option>
+                </select>
+            </div>
+            <div class="form-group form-check" style="display: flex; align-items: center; gap: 10px; padding-top: 30px;">
+                <input type="checkbox" id="read_status" name="read_status" {% if book.read_status %}checked{% endif %}>
+                <label for="read_status" style="margin: 0;">I have read this book</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" placeholder="Add any notes about this book...">{{ book.notes or '' }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
+            <button type="submit" class="btn btn-warning">💾 Save Changes</button>
+            <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

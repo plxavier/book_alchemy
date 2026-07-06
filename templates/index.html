@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Book Alchemy{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_books }}</div>
+        <div>📖 Total Books</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ total_authors }}</div>
+        <div>✍️ Total Authors</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ unread_books }}</div>
+        <div>📚 Unread Books</div>
+    </div>
+</div>
+
+<h2>📚 Recent Additions</h2>
+{% if recent_books %}
+    <div class="card">
+        <ul style="list-style: none; padding: 0;">
+            {% for book in recent_books %}
+                <li style="padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <a href="{{ url_for('book_detail', book_id=book.id) }}" style="text-decoration: none; font-weight: 600; color: #1a1a2e;">
+                            {{ book.title }}
+                        </a>
+                        <span style="color: #6c757d; font-size: 14px;">by {{ book.author.name }}</span>
+                    </div>
+                    <div>
+                        {% if book.read_status %}
+                            <span style="background: #2ecc71; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">✅ Read</span>
+                        {% else %}
+                            <span style="background: #f39c12; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px;">📖 Unread</span>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    <p>No books in your library yet. <a href="{{ url_for('add_book') }}">Add your first book!</a></p>
+{% endif %}
+{% endblock %}

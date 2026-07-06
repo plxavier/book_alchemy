@@ -5,7 +5,27 @@ import sys
 import logging
 import os
 
-# ========== LOGGING ==========
+#database_configuration
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+
+#creating data directory
+try:
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR, mode=0o777)
+        print(f"Created data/ folder at {DATA_DIR}")
+except Exception as error:
+    print(f"Error creating data directory: {error}")
+    sys.exit(1)
+
+#absolute path for database
+DB_PATH = os.path.join(DATA_DIR, 'library.db')
+DB_URI = f'sqlite:///{DB_PATH}'
+
+print(f"📁 Current working directory: {os.getcwd()}")
+print(f"📁 Database path: {DB_PATH}")
+
+#logging
 try:
     logging.basicConfig(
         level=logging.INFO,
@@ -17,16 +37,11 @@ except Exception as error:
     print(f"Error configuring logging: {error}")
     sys.exit(1)
 
-# ========== APP CREATION ==========
+#app_creation
 try:
     app = Flask(__name__)
 
-    # Create data directory if it doesn't exist
-    if not os.path.exists('data'):
-        os.makedirs('data')
-        print("✅ Created data/ folder")
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/library.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'book-alchemy-secret-key'
 
@@ -34,27 +49,26 @@ try:
     migrate = Migrate(app, db)
 
     logger.info("Book Alchemy - Flask application created successfully")
-    print("✅ Flask application created successfully")
+    print("Flask application created successfully")
 except Exception as error:
     logger.error(f"Error creating Flask application: {error}")
-    print(f"❌ Error creating Flask application: {error}")
+    print(f"Error creating Flask application: {error}")
     sys.exit(1)
 
-
-# ========== DATABASE INITIALIZATION ==========
+#initializing_databse
 def init_db():
     """Create database tables if they don't exist."""
     try:
         with app.app_context():
             db.create_all()
             logger.info("Database tables created successfully")
-            print("✅ Database tables created successfully")
+            print("Database tables created successfully")
+            print(f"Database created at: {DB_PATH}")
     except Exception as error:
         logger.error(f"Error initializing database: {error}")
-        print(f"❌ Error initializing database: {error}")
+        print(f"Error initializing database: {error}")
 
-
-# ========== ROUTES ==========
+#app_routes
 
 @app.route('/')
 def index():
@@ -75,7 +89,6 @@ def index():
         return render_template('index.html', error=str(error))
 
 
-# ========== BOOK ROUTES ==========
 
 @app.route('/books')
 def books():
@@ -114,7 +127,6 @@ def books():
         flash(f"Error loading books: {error}", 'error')
         return render_template('books.html', books=[])
 
-
 @app.route('/book/<int:book_id>')
 def book_detail(book_id):
     """View a single book's details."""
@@ -125,7 +137,6 @@ def book_detail(book_id):
         logger.error(f"Error in book_detail: {error}")
         flash(f"Error loading book: {error}", 'error')
         return redirect(url_for('books'))
-
 
 @app.route('/book/add', methods=['GET', 'POST'])
 def add_book():
@@ -193,7 +204,6 @@ def add_book():
         flash(f'Error loading page: {error}', 'error')
         return redirect(url_for('books'))
 
-
 @app.route('/book/<int:book_id>/edit', methods=['GET', 'POST'])
 def edit_book(book_id):
     """Edit a book."""
@@ -231,7 +241,6 @@ def edit_book(book_id):
         flash(f'Error loading page: {error}', 'error')
         return redirect(url_for('books'))
 
-
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
     """Delete a book."""
@@ -245,9 +254,9 @@ def delete_book(book_id):
 
         remaining_books = Book.query.filter_by(author_id=author.id).count()
         if remaining_books == 0:
-            flash(f'📖 "{title}" deleted. Author "{author.name}" has no more books.', 'info')
+            flash(f'"{title}" deleted. Author "{author.name}" has no more books.', 'info')
         else:
-            flash(f'✅ "{title}" deleted successfully!', 'success')
+            flash(f'"{title}" deleted successfully!', 'success')
 
     except Exception as error:
         db.session.rollback()
@@ -255,7 +264,6 @@ def delete_book(book_id):
         flash(f'Error deleting book: {error}', 'error')
 
     return redirect(url_for('books'))
-
 
 # ========== AUTHOR ROUTES ==========
 
@@ -269,7 +277,6 @@ def authors():
         logger.error(f"Error in authors: {error}")
         flash(f"Error loading authors: {error}", 'error')
         return render_template('authors.html', authors=[])
-
 
 @app.route('/author/add', methods=['GET', 'POST'])
 def add_author():
@@ -295,7 +302,7 @@ def add_author():
 
                 db.session.add(new_author)
                 db.session.commit()
-                flash(f'✍️ Author "{name}" added successfully!', 'success')
+                flash(f'Author "{name}" added successfully!', 'success')
                 return redirect(url_for('authors'))
 
             except Exception as error:
@@ -310,7 +317,6 @@ def add_author():
         flash(f'Error loading page: {error}', 'error')
         return redirect(url_for('authors'))
 
-
 # ========== API ENDPOINTS ==========
 
 @app.route('/api/books')
@@ -323,7 +329,6 @@ def api_books():
         logger.error(f"Error in api_books: {error}")
         return jsonify({'error': str(error)}), 500
 
-
 @app.route('/api/authors')
 def api_authors():
     """API endpoint for authors."""
@@ -334,8 +339,7 @@ def api_authors():
         logger.error(f"Error in api_authors: {error}")
         return jsonify({'error': str(error)}), 500
 
-
-# ========== ERROR HANDLERS ==========
+#error_handling
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -343,7 +347,6 @@ def not_found_error(error):
     return render_template('error.html',
                            error_code=404,
                            error_message="Page not found"), 404
-
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -353,22 +356,21 @@ def internal_error(error):
                            error_code=500,
                            error_message="Internal server error"), 500
 
-
-# ========== MAIN ==========
+#main
 if __name__ == '__main__':
     try:
         print("\n" + "=" * 50)
-        print("📚 Book Alchemy - Digital Library")
-        print("📍 Running on http://127.0.0.1:5000")
+        print("Book Alchemy - Digital Library")
+        print("Running on http://127.0.0.1:5001")
         print("=" * 50 + "\n")
 
         init_db()
 
-        app.run(host="0.0.0.0", port=5000, debug=True)
+        app.run(host="0.0.0.0", port=5001, debug=True)
     except KeyboardInterrupt:
-        print("\n👋 Server stopped by user.")
+        print("\nServer stopped by user.")
         logger.info("Server stopped by user")
     except Exception as error:
-        print(f"❌ Error starting server: {error}")
+        print(f"Error starting server: {error}")
         logger.error(f"Error starting server: {error}")
         sys.exit(1)

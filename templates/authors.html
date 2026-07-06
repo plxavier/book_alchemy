@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Authors - Book Alchemy{% endblock %}
+
+{% block content %}
+<h1>✍️ All Authors</h1>
+
+<div style="margin: 15px 0;">
+    <a href="{{ url_for('add_author') }}" class="btn btn-success">➕ Add Author</a>
+</div>
+
+{% if authors %}
+    <div class="card">
+        <ul style="list-style: none; padding: 0;">
+            {% for author in authors %}
+                <li class="author-item">
+                    <div>
+                        <strong>{{ author.name }}</strong>
+                        <span class="author-books">
+                            {% if author.birth_year %}
+                                ({{ author.birth_year }}
+                                {% if author.death_year %} - {{ author.death_year }}{% endif %})
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="author-books">📖 {{ author.books|length }} books</span>
+                        <span style="margin-left: 15px;">
+                            {% if author.nationality %}
+                                🌍 {{ author.nationality }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    <div class="card">
+        <p>No authors found.</p>
+        <a href="{{ url_for('add_author') }}" class="btn btn-success">✍️ Add your first author!</a>
+    </div>
+{% endif %}
+{% endblock %}
