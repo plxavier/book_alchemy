@@ -335,7 +335,7 @@ def edit_book(book_id):
                 book.notes = request.form.get('notes', '').strip()
 
                 db.session.commit()
-                flash('✅ Book updated successfully!', 'success')
+                flash('Book updated successfully!', 'success')
                 return redirect(url_for('book_detail', book_id=book.id))
 
             except Exception as error:
