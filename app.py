@@ -479,12 +479,12 @@ if __name__ == '__main__':
     try:
         print("\n" + "=" * 50)
         print("Book Alchemy - Digital Library")
-        print("Running on http://127.0.0.1:5000")
+        print("Running on http://127.0.0.1:5002")
         print("=" * 50 + "\n")
 
         init_db()
 
-        app.run(host="0.0.0.0", port=5000, debug=True)
+        app.run(host="0.0.0.0", port=5002, debug=True)
     except KeyboardInterrupt:
         print("\nServer stopped by user.")
         logger.info("Server stopped by user")
