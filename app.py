@@ -61,7 +61,7 @@ def seed_sample_data():
     try:
         # Check if authors already exist
         if Author.query.count() == 0:
-            print("📚 Adding sample data...")
+            print("Adding sample data...")
 
             # Create sample authors
             authors = [
@@ -297,7 +297,7 @@ def add_book():
 
                 db.session.add(new_book)
                 db.session.commit()
-                flash(f'📖 Book "{title}" added successfully!', 'success')
+                flash(f'Book "{title}" added successfully!', 'success')
                 return redirect(url_for('books'))
 
             except Exception as error:
@@ -373,7 +373,6 @@ def delete_book(book_id):
 
     return redirect(url_for('books'))
 
-# ========== AUTHOR ROUTES ==========
 
 @app.route('/authors')
 def authors():
@@ -385,6 +384,7 @@ def authors():
         logger.error(f"Error in authors: {error}")
         flash(f"Error loading authors: {error}", 'error')
         return render_template('authors.html', authors=[])
+
 
 @app.route('/author/add', methods=['GET', 'POST'])
 def add_author():
@@ -425,7 +425,6 @@ def add_author():
         flash(f'Error loading page: {error}', 'error')
         return redirect(url_for('authors'))
 
-# ========== API ENDPOINTS ==========
 
 @app.route('/api/books')
 def api_books():
@@ -448,13 +447,13 @@ def api_authors():
         return jsonify({'error': str(error)}), 500
 
 #error_handling
-
 @app.errorhandler(404)
 def not_found_error(error):
     logger.warning(f"404 error: {request.url}")
     return render_template('error.html',
                            error_code=404,
                            error_message="Page not found"), 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -463,6 +462,7 @@ def internal_error(error):
     return render_template('error.html',
                            error_code=500,
                            error_message="Internal server error"), 500
+
 
 #main
 if __name__ == '__main__':
