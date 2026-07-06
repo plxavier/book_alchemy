@@ -9,6 +9,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 
+
 #creating data directory
 try:
     if not os.path.exists(DATA_DIR):
@@ -18,12 +19,14 @@ except Exception as error:
     print(f"Error creating data directory: {error}")
     sys.exit(1)
 
+
 #absolute path for database
 DB_PATH = os.path.join(DATA_DIR, 'library.db')
 DB_URI = f'sqlite:///{DB_PATH}'
 
 print(f"Current working directory: {os.getcwd()}")
 print(f"Database path: {DB_PATH}")
+
 
 #logging
 try:
@@ -36,6 +39,7 @@ try:
 except Exception as error:
     print(f"Error configuring logging: {error}")
     sys.exit(1)
+
 
 #app_creation
 try:
@@ -54,6 +58,7 @@ except Exception as error:
     logger.error(f"Error creating Flask application: {error}")
     print(f"Error creating Flask application: {error}")
     sys.exit(1)
+
 
 #initializing_databse with sample books
 def seed_sample_data():
@@ -197,7 +202,6 @@ def index():
         return render_template('index.html', error=str(error))
 
 
-
 @app.route('/books')
 def books():
     """List all books with search and sorting."""
@@ -235,6 +239,7 @@ def books():
         flash(f"Error loading books: {error}", 'error')
         return render_template('books.html', books=[])
 
+
 @app.route('/book/<int:book_id>')
 def book_detail(book_id):
     """View a single book's details."""
@@ -245,6 +250,7 @@ def book_detail(book_id):
         logger.error(f"Error in book_detail: {error}")
         flash(f"Error loading book: {error}", 'error')
         return redirect(url_for('books'))
+
 
 @app.route('/book/add', methods=['GET', 'POST'])
 def add_book():
@@ -312,6 +318,7 @@ def add_book():
         flash(f'Error loading page: {error}', 'error')
         return redirect(url_for('books'))
 
+
 @app.route('/book/<int:book_id>/edit', methods=['GET', 'POST'])
 def edit_book(book_id):
     """Edit a book."""
@@ -348,6 +355,7 @@ def edit_book(book_id):
         logger.error(f"Error in edit_book: {error}")
         flash(f'Error loading page: {error}', 'error')
         return redirect(url_for('books'))
+
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
@@ -436,6 +444,7 @@ def api_books():
         logger.error(f"Error in api_books: {error}")
         return jsonify({'error': str(error)}), 500
 
+
 @app.route('/api/authors')
 def api_authors():
     """API endpoint for authors."""
@@ -445,6 +454,7 @@ def api_authors():
     except Exception as error:
         logger.error(f"Error in api_authors: {error}")
         return jsonify({'error': str(error)}), 500
+
 
 #error_handling
 @app.errorhandler(404)
